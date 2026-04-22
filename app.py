@@ -89,7 +89,7 @@ elif select=="Comparison":
 elif select=="Data Explorer":
     st.title("Data Explorer")
     st.dataframe(df)
-    
+
 
 
 
