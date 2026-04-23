@@ -7,6 +7,9 @@ st.set_page_config(layout="wide")
 st.title("Cric info app")
 #loading data
 df=pd.read_csv("ABC.csv")
+
+
+
 #---------NAVBAR--------
 select=option_menu(
     menu_title=None,
@@ -14,6 +17,9 @@ select=option_menu(
     icons=["house","person","globe","bar-chart","table"],
     orientation="horizontal"
 )
+
+
+
 #-------Home Page--------
 if select=="Home":
     st.title("Cricket Analysis Dashboard")
@@ -22,35 +28,23 @@ if select=="Home":
     col2.metric("Total Runs",df["Runs"].sum())
     col3.metric("Countries",df["Country"].nunique())
     st.dataframe(df.head())
+   
+   
+    
 #---------Player Analysis---------
 elif select=="Player Analysis":
     st.title("Player Analysis")
     player=st.selectbox("Select Player",df["Player"])
     pdata=df[df["Player"]==player].reset_index()
-    values=pdata[["100","50","6s","4s"]].iloc[0]
-    
-    fig=px.bar(
-        x=values,
-        y=values.index
-    )
-    fig.update_xaxes(range=[0,values.max()+20])
-    
-    # stats=["100","50","4s","6s"]
-    
-    # chart_data=(
-    #     pdata[stats]
-    #     .iloc[0]
-    #     .reset_index()
-    # )
-    
-    # chart_data.columns=["stat","Value"]
-    # fig=px.bar(
-    #     chart_data,
-    #     x=stats,
-    #     y="Value",
-    #     title="Performence"
-    # )
+    df2=pdata[["Runs","Matches","innings","6s","4s","100","50","Ave","High_score"]]
+    df2=df2.T.reset_index()
+    st.dataframe(df2)
+    fig=px.bar(df2,x="index",y=df2.columns[1],color="index")
     col4,col5,col6,col7=st.columns(4)
+    
+    
+    
+    #-------Key metrics-------    
     total_runs=pdata["Runs"].sum()
     total_matches=pdata["Matches"].sum()
     hundreds=pdata["100"].sum()
@@ -71,7 +65,18 @@ elif select=="Country Insights":
     country_runs=df.groupby("Country")["Runs"].sum().reset_index()
     fig=px.pie(country_runs,names="Country",values="Runs")
     st.plotly_chart(fig,use_container_width=True)
-
+    
+    country_select=st.selectbox("Select Country",df["Country"].unique())
+    cdata=df[df["Country"]==country_select]
+    fig_runs=px.pie(
+        cdata,
+        names="Player",
+        values="Runs"
+    )
+    st.plotly_chart(fig_runs,use_container_width=True)
+    
+    
+    
 #---------Comparison--------    
 elif select=="Comparison":
     st.title("Player Comparison")
@@ -84,6 +89,9 @@ elif select=="Comparison":
         size="Runs",color="Country"
     )
     st.plotly_chart(fig,use_container_width=True)
+
+
+
 
 #----------Data Explorer----------
 elif select=="Data Explorer":
